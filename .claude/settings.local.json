@@ -6,7 +6,10 @@
       "Bash(php artisan route:list --columns=method,uri)",
       "Bash(grep -rn 'namespace Filament\\\\\\\\Schemas' vendor/filament/)",
       "Bash(php artisan route:list)",
-      "Bash(php artisan migrate:fresh)"
+      "Bash(php artisan migrate:fresh)",
+      "Bash(xargs ls -la)",
+      "Bash(grep -r \"Filament\\\\\\\\Forms\\\\\\\\Get\\\\|Filament\\\\\\\\Schemas.*Get\\\\|use.*Get;\" app/Filament/)",
+      "Bash(php artisan route:list --path=admin)"
     ]
   }
 }

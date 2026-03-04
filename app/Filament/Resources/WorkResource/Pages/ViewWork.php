@@ -43,7 +43,19 @@ class ViewWork extends ViewRecord
                             ->label('Faol'),
                         Infolists\Components\TextEntry::make('message')
                             ->label('Xabar')
-                            ->getStateUsing(fn (Work $record) => json_encode($record->message, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)),
+                            ->getStateUsing(function (Work $record) {
+                                $message = $record->message ?? [];
+
+                                if ($record->type === WorkType::SMS) {
+                                    return $message['message'] ?? '-';
+                                }
+
+                                if ($record->type === WorkType::CALL) {
+                                    return $message['audio_url'] ?? '-';
+                                }
+
+                                return '-';
+                            }),
                         Infolists\Components\TextEntry::make('scheduled_at')
                             ->label('Rejalashtirilgan')
                             ->dateTime(),

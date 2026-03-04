@@ -17,12 +17,14 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -60,7 +62,8 @@ class WorkResource extends Resource
                             ->label('Turi')
                             ->options(WorkType::class)
                             ->required()
-                            ->native(false),
+                            ->native(false)
+                            ->live(),
 
                         Select::make('status')
                             ->label('Holati')
@@ -73,14 +76,28 @@ class WorkResource extends Resource
                             ->label('Faol')
                             ->default(true),
 
-                        KeyValue::make('message')
-                            ->label('Xabar ma\'lumotlari')
-                            ->reorderable(),
-
                         DateTimePicker::make('scheduled_at')
                             ->label('Rejalashtirilgan vaqt'),
                     ])
                     ->columns(2),
+
+                Section::make('Xabar tafsilotlari')
+                    ->schema([
+                        Textarea::make('sms_message')
+                            ->label('Xabar matni')
+                            ->visible(fn (Get $get) => $get('type') === 'sms')
+                            ->required(fn (Get $get) => $get('type') === 'sms')
+                            ->rows(4)
+                            ->placeholder('SMS xabar matnini kiriting...'),
+
+                        FileUpload::make('call_audio')
+                            ->label('Ovozli fayl')
+                            ->visible(fn (Get $get) => $get('type') === 'call')
+                            ->required(fn (Get $get) => $get('type') === 'call')
+                            ->acceptedFileTypes(['audio/*'])
+                            ->directory('call-audio'),
+                    ])
+                    ->visible(fn (Get $get) => $get('type') !== null),
             ]);
     }
 
