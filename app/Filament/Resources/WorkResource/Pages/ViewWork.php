@@ -9,6 +9,7 @@ use App\Models\Work;
 use Filament\Actions;
 use Filament\Infolists;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
 class ViewWork extends ViewRecord
@@ -26,7 +27,7 @@ class ViewWork extends ViewRecord
     {
         return $infolist
             ->schema([
-                Infolists\Components\Section::make('Ish tafsilotlari')
+                Section::make('Ish tafsilotlari')
                     ->schema([
                         Infolists\Components\TextEntry::make('title')
                             ->label('Sarlavha'),
@@ -55,7 +56,7 @@ class ViewWork extends ViewRecord
                     ])
                     ->columns(2),
 
-                Infolists\Components\Section::make('Jarayon')
+                Section::make('Jarayon')
                     ->schema([
                         Infolists\Components\TextEntry::make('progress_display')
                             ->label('Bajarilish')
