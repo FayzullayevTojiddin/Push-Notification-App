@@ -9,11 +9,11 @@ class PhoneNumber extends Model
 {
     protected $fillable = [
         'number',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
     ];
 
     public function calls(): HasMany
@@ -24,5 +24,10 @@ class PhoneNumber extends Model
     public function smses(): HasMany
     {
         return $this->hasMany(SMS::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 }

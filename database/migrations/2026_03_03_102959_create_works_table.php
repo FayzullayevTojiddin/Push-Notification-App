@@ -11,14 +11,18 @@ return new class extends Migration
         Schema::create('works', function (Blueprint $table) {
             $table->id();
             $table->string('type');
-            $table->string('title')->unique();
-            $table->string('status')->default('created');
-            $table->boolean('is_active')->default(false);
+            $table->string('title');
+            $table->string('status')->default('pending');
+            $table->boolean('is_active')->default(true);
             $table->json('message')->nullable();
             $table->dateTime('scheduled_at')->nullable();
             $table->dateTime('started_at')->nullable();
             $table->dateTime('completed_at')->nullable();
             $table->timestamps();
+
+            $table->index('status');
+            $table->index('is_active');
+            $table->index(['is_active', 'status']);
         });
     }
 

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php -v)",
+      "Bash(composer -V)",
+      "Bash(php artisan route:list --columns=method,uri)",
+      "Bash(grep -rn 'namespace Filament\\\\\\\\Schemas' vendor/filament/)",
+      "Bash(php artisan route:list)",
+      "Bash(php artisan migrate:fresh)"
+    ]
+  }
+}

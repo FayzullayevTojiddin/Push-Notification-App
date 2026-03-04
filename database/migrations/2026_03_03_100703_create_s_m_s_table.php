@@ -12,10 +12,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('work_id')->constrained()->cascadeOnDelete();
             $table->foreignId('phone_number_id')->constrained()->cascadeOnDelete();
-            $table->string('status');
+            $table->string('status')->default('pending');
             $table->unsignedInteger('retry')->default(0);
             $table->json('response')->nullable();
             $table->timestamps();
+
+            $table->index('status');
+            $table->index(['work_id', 'status']);
+            $table->index(['phone_number_id', 'status']);
         });
     }
 

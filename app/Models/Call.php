@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ItemStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -12,20 +13,27 @@ class Call extends Model
         'phone_number_id',
         'status',
         'retry',
-        'response'
+        'response',
     ];
 
     protected $casts = [
-        'response' => 'array'
+        'status' => ItemStatus::class,
+        'response' => 'array',
+        'retry' => 'integer',
     ];
+
+    public function work(): BelongsTo
+    {
+        return $this->belongsTo(Work::class);
+    }
 
     public function phoneNumber(): BelongsTo
     {
         return $this->belongsTo(PhoneNumber::class);
     }
 
-    public function work(): BelongsTo
+    public function scopePending($query)
     {
-        return $this->belongsTo(Work::class);
+        return $query->where('status', ItemStatus::PENDING);
     }
 }
