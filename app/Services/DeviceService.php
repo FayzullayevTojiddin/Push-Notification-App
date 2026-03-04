@@ -7,6 +7,7 @@ use App\Enums\WorkStatus;
 use App\Enums\WorkType;
 use App\Models\Call;
 use App\Models\Device;
+use App\Models\PhoneNumber;
 use App\Models\SMS;
 use App\Models\Work;
 use Illuminate\Support\Collection;
@@ -122,36 +123,52 @@ class DeviceService
             ->keyBy('id');
 
         $affectedWorkIds = collect();
+        $phoneNumberUpdates = collect();
 
-        DB::transaction(function () use ($items, $smsItems, $callItems, &$affectedWorkIds) {
+        DB::transaction(function () use ($items, $smsItems, $callItems, &$affectedWorkIds, &$phoneNumberUpdates) {
             foreach ($items as $item) {
                 $id = $item['id'];
                 $status = ItemStatus::from($item['status']);
                 $response = $item['response'] ?? null;
 
-                if ($smsItems->has($id)) {
-                    $sms = $smsItems->get($id);
-                    $updateData = [
-                        'status' => $status,
-                        'response' => $response,
-                    ];
-                    if ($status === ItemStatus::FAILED) {
-                        $updateData['retry'] = $sms->retry + 1;
-                    }
-                    $sms->update($updateData);
-                    $affectedWorkIds->push($sms->work_id);
-                } elseif ($callItems->has($id)) {
-                    $call = $callItems->get($id);
-                    $updateData = [
-                        'status' => $status,
-                        'response' => $response,
-                    ];
-                    if ($status === ItemStatus::FAILED) {
-                        $updateData['retry'] = $call->retry + 1;
-                    }
-                    $call->update($updateData);
-                    $affectedWorkIds->push($call->work_id);
+                $record = $smsItems->get($id) ?? $callItems->get($id);
+
+                if (!$record) {
+                    continue;
                 }
+
+                $updateData = [
+                    'status' => $status,
+                    'response' => $response,
+                ];
+
+                if ($status === ItemStatus::FAILED) {
+                    $updateData['retry'] = $record->retry + 1;
+                }
+
+                $record->update($updateData);
+                $affectedWorkIds->push($record->work_id);
+                $phoneNumberUpdates->push([
+                    'phone_number_id' => $record->phone_number_id,
+                    'status' => $status,
+                ]);
+            }
+        });
+
+        $phoneNumberUpdates->groupBy('phone_number_id')->each(function ($updates, $phoneNumberId) {
+            $phoneNumber = PhoneNumber::find($phoneNumberId);
+
+            if (!$phoneNumber) {
+                return;
+            }
+
+            $hasSent = $updates->contains('status', ItemStatus::SENT);
+            $allFailed = $updates->every(fn ($u) => $u['status'] === ItemStatus::FAILED);
+
+            if ($hasSent) {
+                $phoneNumber->resetFailed();
+            } elseif ($allFailed) {
+                $phoneNumber->incrementFailed();
             }
         });
 

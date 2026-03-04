@@ -12,7 +12,13 @@
       "Bash(php artisan route:list --path=admin)",
       "Bash(php artisan make:migration create_devices_table)",
       "Bash(php artisan migrate)",
-      "Bash(php artisan route:list --path=api)"
+      "Bash(php artisan route:list --path=api)",
+      "Bash(php artisan storage:link)",
+      "Bash(php artisan config:show livewire)",
+      "Bash(php artisan make:migration add_failed_count_to_phone_numbers_table)",
+      "Bash(php artisan make:command ResetStuckItems)",
+      "Bash(php artisan app:reset-stuck-items)",
+      "Bash(php artisan schedule:list)"
     ]
   }
 }

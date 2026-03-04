@@ -17,7 +17,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -90,12 +89,12 @@ class WorkResource extends Resource
                             ->rows(4)
                             ->placeholder('SMS xabar matnini kiriting...'),
 
-                        FileUpload::make('call_audio')
-                            ->label('Ovozli fayl')
+                        TextInput::make('call_audio')
+                            ->label('Ovozli fayl URL')
                             ->visible(fn (Get $get) => $get('type') === 'call' || $get('type') === WorkType::CALL)
                             ->required(fn (Get $get) => $get('type') === 'call' || $get('type') === WorkType::CALL)
-                            ->acceptedFileTypes(['audio/*'])
-                            ->directory('call-audio'),
+                            ->url()
+                            ->placeholder('https://example.com/audio.mp3'),
                     ])
                     ->visible(fn (Get $get) => $get('type') !== null),
             ]);
