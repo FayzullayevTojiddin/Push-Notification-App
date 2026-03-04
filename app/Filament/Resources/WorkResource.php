@@ -85,15 +85,15 @@ class WorkResource extends Resource
                     ->schema([
                         Textarea::make('sms_message')
                             ->label('Xabar matni')
-                            ->visible(fn (Get $get) => $get('type') === 'sms')
-                            ->required(fn (Get $get) => $get('type') === 'sms')
+                            ->visible(fn (Get $get) => $get('type') === 'sms' || $get('type') === WorkType::SMS)
+                            ->required(fn (Get $get) => $get('type') === 'sms' || $get('type') === WorkType::SMS)
                             ->rows(4)
                             ->placeholder('SMS xabar matnini kiriting...'),
 
                         FileUpload::make('call_audio')
                             ->label('Ovozli fayl')
-                            ->visible(fn (Get $get) => $get('type') === 'call')
-                            ->required(fn (Get $get) => $get('type') === 'call')
+                            ->visible(fn (Get $get) => $get('type') === 'call' || $get('type') === WorkType::CALL)
+                            ->required(fn (Get $get) => $get('type') === 'call' || $get('type') === WorkType::CALL)
                             ->acceptedFileTypes(['audio/*'])
                             ->directory('call-audio'),
                     ])

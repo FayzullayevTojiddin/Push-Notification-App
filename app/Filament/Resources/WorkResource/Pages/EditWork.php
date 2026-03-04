@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\WorkResource\Pages;
 
+use App\Enums\WorkType;
 use App\Filament\Resources\WorkResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -22,11 +23,12 @@ class EditWork extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $type = $data['type'] instanceof WorkType ? $data['type']->value : $data['type'];
         $message = [];
 
-        if ($data['type'] === 'sms') {
+        if ($type === 'sms') {
             $message['message'] = $data['sms_message'] ?? '';
-        } elseif ($data['type'] === 'call') {
+        } elseif ($type === 'call') {
             $message['audio_url'] = $data['call_audio'] ?? '';
         }
 
