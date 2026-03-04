@@ -6,7 +6,7 @@ use App\Enums\ItemStatus;
 use App\Enums\WorkStatus;
 use App\Enums\WorkType;
 use App\Models\Call;
-use App\Models\PhoneNumber;
+use App\Models\Device;
 use App\Models\SMS;
 use App\Models\Work;
 use Illuminate\Support\Collection;
@@ -20,13 +20,15 @@ class DeviceService
 
     public function fetchItems(string $phoneNumber): array
     {
-        $phone = PhoneNumber::where('number', $phoneNumber)
+        $device = Device::where('phone_number', $phoneNumber)
             ->where('is_active', true)
             ->first();
 
-        if (!$phone) {
+        if (!$device) {
             return [];
         }
+
+        $device->update(['last_seen_at' => now()]);
 
         $activeWorks = Work::active()
             ->whereIn('status', [WorkStatus::PENDING, WorkStatus::PROCESSING])
@@ -40,7 +42,7 @@ class DeviceService
         $result = [];
 
         foreach ($activeWorks as $work) {
-            $items = $this->fetchWorkItems($work, $phone);
+            $items = $this->fetchWorkItems($work);
 
             if ($items->isEmpty()) {
                 continue;
@@ -69,11 +71,10 @@ class DeviceService
         return $result;
     }
 
-    private function fetchWorkItems(Work $work, PhoneNumber $phone): Collection
+    private function fetchWorkItems(Work $work): Collection
     {
         if ($work->type === WorkType::SMS) {
             return SMS::where('work_id', $work->id)
-                ->where('phone_number_id', $phone->id)
                 ->where('status', ItemStatus::PENDING)
                 ->with('phoneNumber:id,number')
                 ->oldest('id')
@@ -82,7 +83,6 @@ class DeviceService
         }
 
         return Call::where('work_id', $work->id)
-            ->where('phone_number_id', $phone->id)
             ->where('status', ItemStatus::PENDING)
             ->with('phoneNumber:id,number')
             ->oldest('id')
@@ -103,19 +103,21 @@ class DeviceService
 
     public function reportItems(string $phoneNumber, array $items): void
     {
-        $phone = PhoneNumber::where('number', $phoneNumber)
+        $device = Device::where('phone_number', $phoneNumber)
             ->where('is_active', true)
             ->firstOrFail();
+
+        $device->update(['last_seen_at' => now()]);
 
         $itemIds = collect($items)->pluck('id');
 
         $smsItems = SMS::whereIn('id', $itemIds)
-            ->where('phone_number_id', $phone->id)
+            ->where('status', ItemStatus::PROCESSING)
             ->get()
             ->keyBy('id');
 
         $callItems = Call::whereIn('id', $itemIds)
-            ->where('phone_number_id', $phone->id)
+            ->where('status', ItemStatus::PROCESSING)
             ->get()
             ->keyBy('id');
 

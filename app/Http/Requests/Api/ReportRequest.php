@@ -16,7 +16,7 @@ class ReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone_number' => ['required', 'string', 'exists:phone_numbers,number'],
+            'phone_number' => ['required', 'string', 'exists:devices,phone_number'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.id' => ['required', 'integer'],
             'items.*.status' => ['required', 'string', Rule::in([ItemStatus::SENT->value, ItemStatus::FAILED->value])],

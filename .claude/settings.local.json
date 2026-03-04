@@ -9,7 +9,10 @@
       "Bash(php artisan migrate:fresh)",
       "Bash(xargs ls -la)",
       "Bash(grep -r \"Filament\\\\\\\\Forms\\\\\\\\Get\\\\|Filament\\\\\\\\Schemas.*Get\\\\|use.*Get;\" app/Filament/)",
-      "Bash(php artisan route:list --path=admin)"
+      "Bash(php artisan route:list --path=admin)",
+      "Bash(php artisan make:migration create_devices_table)",
+      "Bash(php artisan migrate)",
+      "Bash(php artisan route:list --path=api)"
     ]
   }
 }

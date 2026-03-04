@@ -14,7 +14,7 @@ class FetchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone_number' => ['required', 'string', 'exists:phone_numbers,number'],
+            'phone_number' => ['required', 'string', 'exists:devices,phone_number'],
         ];
     }
 }
