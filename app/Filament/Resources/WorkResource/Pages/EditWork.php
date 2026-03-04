@@ -15,7 +15,7 @@ class EditWork extends EditRecord
     {
         $message = $data['message'] ?? [];
 
-        $data['sms_message'] = $message['message'] ?? '';
+        $data['sms_message'] = $message['text'] ?? '';
         $data['call_audio'] = $message['audio_url'] ?? '';
 
         return $data;
@@ -27,7 +27,7 @@ class EditWork extends EditRecord
         $message = [];
 
         if ($type === 'sms') {
-            $message['message'] = $data['sms_message'] ?? '';
+            $message['text'] = $data['sms_message'] ?? '';
         } elseif ($type === 'call') {
             $message['audio_url'] = $data['call_audio'] ?? '';
         }

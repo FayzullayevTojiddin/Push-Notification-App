@@ -47,7 +47,7 @@ class ViewWork extends ViewRecord
                                 $message = $record->message ?? [];
 
                                 if ($record->type === WorkType::SMS) {
-                                    return $message['message'] ?? '-';
+                                    return $message['text'] ?? '-';
                                 }
 
                                 if ($record->type === WorkType::CALL) {

@@ -17,7 +17,7 @@ class CreateWork extends CreateRecord
         $message = [];
 
         if ($type === 'sms') {
-            $message['message'] = $data['sms_message'] ?? '';
+            $message['text'] = $data['sms_message'] ?? '';
         } elseif ($type === 'call') {
             $message['audio_url'] = $data['call_audio'] ?? '';
         }
