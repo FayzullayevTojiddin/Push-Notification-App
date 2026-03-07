@@ -19,6 +19,11 @@ class PhoneNumberImport implements ToModel, WithHeadingRow
             return null;
         }
 
+        // Auto-add + prefix if missing
+        if (!str_starts_with($number, '+')) {
+            $number = '+' . $number;
+        }
+
         if (PhoneNumber::where('number', $number)->exists()) {
             $this->duplicated++;
             return null;
