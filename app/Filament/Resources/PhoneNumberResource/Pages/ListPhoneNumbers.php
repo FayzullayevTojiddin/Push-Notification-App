@@ -8,6 +8,7 @@ use Filament\Actions;
 use Filament\Forms;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ListPhoneNumbers extends ListRecords
@@ -23,6 +24,8 @@ class ListPhoneNumbers extends ListRecords
                 ->form([
                     Forms\Components\FileUpload::make('file')
                         ->label('Excel fayl')
+                        ->disk('public')
+                        ->directory('imports')
                         ->acceptedFileTypes([
                             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
                             'application/vnd.ms-excel',
@@ -33,7 +36,9 @@ class ListPhoneNumbers extends ListRecords
                 ->action(function (array $data): void {
                     $import = new PhoneNumberImport();
 
-                    Excel::import($import, storage_path('app/public/' . $data['file']));
+                    $filePath = Storage::disk('public')->path($data['file']);
+
+                    Excel::import($import, $filePath);
 
                     Notification::make()
                         ->title('Import yakunlandi')
